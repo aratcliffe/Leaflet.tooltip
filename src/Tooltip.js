@@ -52,6 +52,10 @@ L.Tooltip = L.Class.extend({
 			target = target._icon;
 		}
 
+		if (target === this._target) {
+			return;
+		}
+
 		if (this._target) {
 			this._unbindTarget(this._target);
 		}
@@ -205,3 +209,32 @@ L.Map.addInitHook(function () {
 L.tooltip = function (options) {
 	return new L.Tooltip(options);
 };
+
+(function () {
+	var originalOnAdd = L.Marker.prototype.onAdd,
+	    originalOnRemove = L.Marker.prototype.onRemove,
+	    originalSetIcon = L.Marker.prototype.setIcon;
+
+	L.Marker.include({
+
+		getTooltip: function () {
+			return this._tooltip;
+		},
+		
+		onAdd: function (map) {
+			originalOnAdd.call(this, map);
+
+			if (this.options.tooltip) {
+				this._tooltip = L.tooltip(L.extend(this.options.tooltip, {target: this, map: map}));
+			}
+		},
+
+		setIcon: function (icon) {			
+			originalSetIcon.call(this, icon);
+			
+			if (this._tooltip) {
+				this._tooltip.setTarget(this._icon);
+			}
+		}
+	});	
+})();
