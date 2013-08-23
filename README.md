@@ -77,4 +77,4 @@ remove()
 Destroys the tooltip and unbinds any event listeners registered.
 
 ##License
-This software is released under the [MIT licence](http://www.opensource.org/licenses/mit-license.php). Icons used in the example are from [http://glyphicons.com](http://glyphicons.com).
+This software is released under the [MIT licence](http://www.opensource.org/licenses/mit-license.php).
