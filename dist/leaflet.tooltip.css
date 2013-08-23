@@ -13,9 +13,7 @@
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
-}
 
-.leaflet-fade-anim .leaflet-tooltip.leaflet-tooltip-fade {
     opacity: 0;
 	-webkit-transition: opacity 150ms linear;
 	-moz-transition: opacity 150ms linear;
@@ -23,6 +21,6 @@
 	transition: opacity 150ms linear;    
 }
 
-.leaflet-fade-anim .leaflet-tooltip-container .leaflet-tooltip {
+.leaflet-tooltip.leaflet-tooltip-fade {
     opacity: 1;
 }

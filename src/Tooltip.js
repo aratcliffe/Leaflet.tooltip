@@ -25,26 +25,26 @@ L.Tooltip = L.Class.extend({
 			throw new Error('No map configured for tooltip');
 		}
 
-		var cls = 'leaflet-tooltip' + (this.options.fadeAnimation ? ' leaflet-tooltip-fade' : '');
-
-		this._container = L.DomUtil.create('div', cls);
+		this._container = L.DomUtil.create('div', 'leaflet-tooltip');
 		this._container.style.position = 'absolute';
 		this._container.style.width = !isNaN(this.options.width) ? this.options.width + 'px' : this.options.width;
 		this._container.style.minWidth = !isNaN(this.options.minWidth) ? this.options.minWidth + 'px' : this.options.minWidth;
 		this._container.style.maxWidth = !isNaN(this.options.maxWidth) ? this.options.maxWidth + 'px' : this.options.maxWidth;
 		this._container.style.padding = !isNaN(this.options.padding) ? this.options.padding + 'px' : this.options.padding;
-		
-		L.DomUtil.setOpacity(this._container, 0);
 
 		if (this.options.html) {
 			this.setHtml(this.options.html);
 		}
 
-		this._map._tooltipContainer.appendChild(this._container);
-
-		if (this.options.target) {
+ 		if (this.options.target) {
 			this.setTarget(this.options.target);
 		}
+
+		this._map._tooltipContainer.appendChild(this._container);
+	},
+	
+	isVisible: function () {
+		return this._showing;
 	},
 
 	setTarget: function (target) {
@@ -69,20 +69,14 @@ L.Tooltip = L.Class.extend({
 		L.DomEvent
 			.on(target, 'mouseover', this._onTargetMouseover, this)
 		    .on(target, 'mouseout', this._onTargetMouseout, this)
-		
-		if (this.options.trackMouse) {
-			L.DomEvent.on(target, 'mousemove', this._onTargetMousemove, this);
-		}
+		    .on(target, 'mousemove', this._onTargetMousemove, this);
 	},
 
 	_unbindTarget: function (target) {
 		L.DomEvent
 			.off(target, 'mouseover', this._onTargetMouseover, this)
 		    .off(target, 'mouseout', this._onTargetMouseout, this)
-		
-		if (this.options.trackMouse) {
-			L.DomEvent.off(target, 'mousemove', this._onTargetMousemove, this);
-		}		
+		    .off(target, 'mousemove', this._onTargetMousemove, this);
 	},
 
 	setHtml: function (html) {
@@ -132,6 +126,11 @@ L.Tooltip = L.Class.extend({
 	},
 
 	show: function (point, html) {
+		if (L.Tooltip.activeTip && L.Tooltip.activeTip != this) {
+			L.Tooltip.activeTip._hide();
+		}
+		L.Tooltip.activeTip = this;		
+		
 		if (html) {
 			this.setHtml(html);
 		}
@@ -139,30 +138,54 @@ L.Tooltip = L.Class.extend({
 		this.setPosition(point);
 
 		if (this.options.showDelay) {
-			setTimeout(L.Util.bind(this._show, this), this.options.showDelay);
+			this._delay(this._show, this, this.options.hideDelay);
 		} else {
 			this._show();
 		}
 	},
 
 	_show: function () {
-		L.DomUtil.setOpacity(this._container, 1);
+		this._container.style.display = '';		
+
+		// Necessary to force re-calculation of the opacity value so transition will run correctly
+		window.getComputedStyle(this._container).opacity;
+
+		L.DomUtil.addClass(this._container, 'leaflet-tooltip-fade');
+
 		this._showing = true;			
 	},
 
 	hide: function () {
-		if (this._showing) {
-			if (this.options.hideDelay) {
-				setTimeout(L.Util.bind(this._hide, this), this.options.hideDelay);
-			} else {
-				this._hide();
-			}
+		if (this.options.hideDelay) {
+			this._delay(this._hide, this, this.options.hideDelay);
+		} else {
+			this._hide();
+		}		
+	},
+
+	_hide: function () {	
+		if (this._timeout) {
+			clearTimeout(this._timeout);
+		}
+		
+		L.DomUtil.removeClass(this._container, 'leaflet-tooltip-fade');
+		this._container.style.display = 'none';
+		
+		this.showing = false;
+
+		if (L.Tooltip.activeTip === this) {
+			delete L.Tooltip.activeTip;
 		}
 	},
 
-	_hide: function () {		
-		L.DomUtil.setOpacity(this._container, 0);
-		this.showing = false;
+	_delay: function (func, scope, delay) {
+		if (this._timeout) {
+			clearTimeout(this._timeout);
+		}
+		this._timeout = setTimeout(function () {
+			func.call(scope);
+			delete this._timeout;
+		}, delay);
 	},
 
 	_getElementSize: function (el) {		
@@ -181,7 +204,6 @@ L.Tooltip = L.Class.extend({
 			
 			this._sizeChanged = false;
 		}
-
 		return size;
 	},
 
@@ -191,10 +213,13 @@ L.Tooltip = L.Class.extend({
 		this.show(point);
 	},
 
-	_onTargetMousemove: function (e) {	
-		var point = this._map.mouseEventToContainerPoint(e);
-		
-		this.setPosition(point);
+	_onTargetMousemove: function (e) {
+		L.DomEvent.stopPropagation(e);
+
+		if (this.options.trackMouse) {
+			var point = this._map.mouseEventToContainerPoint(e);		
+			this.setPosition(point);
+		}
 	},
 
 	_onTargetMouseout: function (e) {
@@ -229,10 +254,19 @@ L.tooltip = function (options) {
 			}
 		},
 
+		onRemove: function (map) {
+			if (this._tooltip) {
+				this._tooltip.remove();
+			}
+		},
+
 		setIcon: function (icon) {			
 			originalSetIcon.call(this, icon);
 			
 			if (this._tooltip) {
+				if (this._tooltip.isVisible()) {
+					this._tooltip._hide();
+				}
 				this._tooltip.setTarget(this._icon);
 			}
 		}
