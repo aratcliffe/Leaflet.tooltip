@@ -35,8 +35,8 @@ L.marker(new L.LatLng(-36.852668, 174.762675), {
 | target | HTMLElement/[L.Marker](http://leafletjs.com/reference.html#marker) | `undefined` | The element or marker to bind the tooltip to.
 | html | String | `undefined` | The tooltip content. May also be set using the `L.Tooltip.setHtml()` method.
 | width | mixed | `'auto'` | The width of the tooltip. If unspecified the width will be determined by the tooltip content.
-| minWidth | mixed | `'auto'` | The minimum width of the tooltip specifed as a number or a valid CSS width value.
-| maxWidth | mixed | `'auto'` | The minimum width of the tooltip specifed as a number or a valid CSS width value.
+| minWidth | mixed | `''` | The minimum width of the tooltip specifed as a number or a valid CSS width value.
+| maxWidth | mixed | `''` | The minimum width of the tooltip specifed as a number or a valid CSS width value.
 | padding | mixed | `'2px 4px'` | The padding between the tooltip container edge and its content. Specified as a number or a valid CSS padding value.
 | showDelay | Number | `500` | Delay in milliseconds before the tooltip displays after the mouse enters the target element. Set to 0 for the tooltip to show immediately.
 | hideDelay | Number | `500` | Delay in milliseconds after the mouse exits the target element but before the tooltip actually hides. Set to 0 for the tooltip to hide immediately.
