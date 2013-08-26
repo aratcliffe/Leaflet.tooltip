@@ -1,7 +1,7 @@
 #Leaflet.tooltip
 ================
 
-HTML tooltip, supporting a range of configuration options.
+HTML tooltip, supporting a range of configuration options. See the [demo](http://aratcliffe.github.io/Leaflet.tooltip/examples/index.html).
 
 ##Usage
 
