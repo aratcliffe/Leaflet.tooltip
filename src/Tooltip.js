@@ -2,8 +2,8 @@ L.Tooltip = L.Class.extend({
 	
 	options: {
 		width: 'auto',
-		minWidth: 'auto',
-		maxWidth: 'auto',
+		minWidth: '',
+		maxWidth: '',
 		padding: '2px 4px',
 		showDelay: 500,
 		hideDelay: 500,
@@ -27,10 +27,11 @@ L.Tooltip = L.Class.extend({
 
 		this._container = L.DomUtil.create('div', 'leaflet-tooltip');
 		this._container.style.position = 'absolute';
-		this._container.style.width = !isNaN(this.options.width) ? this.options.width + 'px' : this.options.width;
-		this._container.style.minWidth = !isNaN(this.options.minWidth) ? this.options.minWidth + 'px' : this.options.minWidth;
-		this._container.style.maxWidth = !isNaN(this.options.maxWidth) ? this.options.maxWidth + 'px' : this.options.maxWidth;
-		this._container.style.padding = !isNaN(this.options.padding) ? this.options.padding + 'px' : this.options.padding;
+		this._container.style.width = this._isNumeric(this.options.width) ? this.options.width + 'px' : this.options.width;
+		this._container.style.minWidth = this._isNumeric(this.options.minWidth) ? this.options.minWidth + 'px' : this.options.minWidth;
+		this._container.style.maxWidth = this._isNumeric(this.options.maxWidth) ? this.options.maxWidth + 'px' : this.options.maxWidth;
+
+		this._container.style.padding = this._isNumeric(this.options.padding) ? this.options.padding + 'px' : this.options.padding;
 
 		if (this.options.html) {
 			this.setHtml(this.options.html);
@@ -145,10 +146,12 @@ L.Tooltip = L.Class.extend({
 	},
 
 	_show: function () {
-		this._container.style.display = '';		
+		this._container.style.display = 'inline-block';		
 
 		// Necessary to force re-calculation of the opacity value so transition will run correctly
-		window.getComputedStyle(this._container).opacity;
+		if (window.getComputedStyle) {
+			window.getComputedStyle(this._container).opacity;
+		}
 
 		L.DomUtil.addClass(this._container, 'leaflet-tooltip-fade');
 
@@ -179,13 +182,19 @@ L.Tooltip = L.Class.extend({
 	},
 
 	_delay: function (func, scope, delay) {
+		var me = this;
+
 		if (this._timeout) {
 			clearTimeout(this._timeout);
 		}
 		this._timeout = setTimeout(function () {
 			func.call(scope);
-			delete this._timeout;
+			delete me._timeout;
 		}, delay);
+	},
+
+	_isNumeric: function (val) {
+		return !isNaN(parseFloat(val)) && isFinite(val);
 	},
 
 	_getElementSize: function (el) {		
@@ -196,11 +205,13 @@ L.Tooltip = L.Class.extend({
 
 			el.style.left = '-999999px';
 			el.style.right = 'auto';
+			el.style.display = 'inline-block';
 			
 			size.x = el.offsetWidth;
 			size.y = el.offsetHeight;
 			
 			el.style.left = 'auto';
+			el.style.display = 'none';
 			
 			this._sizeChanged = false;
 		}
@@ -264,9 +275,6 @@ L.tooltip = function (options) {
 			originalSetIcon.call(this, icon);
 			
 			if (this._tooltip) {
-				if (this._tooltip.isVisible()) {
-					this._tooltip._hide();
-				}
 				this._tooltip.setTarget(this._icon);
 			}
 		}
