@@ -269,6 +269,7 @@ L.tooltip = function (options) {
 			if (this._tooltip) {
 				this._tooltip.remove();
 			}
+			originalOnRemove.call(this, map);
 		},
 
 		setIcon: function (icon) {			
