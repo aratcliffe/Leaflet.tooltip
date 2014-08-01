@@ -104,7 +104,7 @@ L.Tooltip = L.Class.extend({
 		
 		if (point.x + containerSize.x > mapSize.x) {
 			container.style.left = 'auto';
-			container.style.right = (mapSize.x - point.x) + 'px';
+			container.style.right = (mapSize.x - point.x + 2*(this.options.mouseOffset.x)) + 'px';
 		} else {
 			container.style.left = point.x + 'px';
 			container.style.right = 'auto';
@@ -112,7 +112,7 @@ L.Tooltip = L.Class.extend({
 		
 		if (point.y + containerSize.y > mapSize.y) {
 			container.style.top = 'auto';
-			container.style.bottom = (mapSize.y - point.y) + 'px';
+            container.style.bottom = (mapSize.y - point.y + 2*(this.options.mouseOffset.y)) + 'px';
 		} else {
 			container.style.top = point.y + 'px';
 			container.style.bottom = 'auto';
@@ -176,7 +176,7 @@ L.Tooltip = L.Class.extend({
 		L.DomUtil.removeClass(this._container, 'leaflet-tooltip-fade');
 		this._container.style.display = 'none';
 		
-		this.showing = false;
+		this._showing = false;
 
 		if (L.Tooltip.activeTip === this) {
 			delete L.Tooltip.activeTip;
