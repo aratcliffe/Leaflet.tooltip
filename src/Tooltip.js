@@ -51,6 +51,8 @@ L.Tooltip = L.Class.extend({
 	setTarget: function (target) {
 		if (target._icon) {
 			target = target._icon;
+		} else if (target._container) {
+			target = target._container;
 		}
 
 		if (target === this._target) {
