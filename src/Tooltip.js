@@ -141,7 +141,7 @@ L.Tooltip = L.Class.extend({
 		this.setPosition(point);
 
 		if (this.options.showDelay) {
-			this._delay(this._show, this, this.options.hideDelay);
+			this._delay(this._show, this, this.options.showDelay);
 		} else {
 			this._show();
 		}
