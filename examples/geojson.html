@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Leaflet Tooltip</title>
+    <title>Leaflet Tooltip GeoJSON Example</title>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css"/>
     <link rel="stylesheet" href="../dist/leaflet.tooltip.css"/>
   </head>
@@ -10,28 +10,31 @@
     <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
     <script src="../dist/leaflet.tooltip.js"></script>
     <script>
-      var map,
-	      ll = new L.LatLng(-36.852668, 174.762675),
-          marker,
-          tooltip;
+      var map, polygon, tooltip;
 
 	  map = L.map('map', {
-	      center: ll,
+	      center: [-36.852668, 174.762675],
 	      zoom: 15
 	  });
 
-	  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-		  attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-	  }).addTo(map);
-
-      marker = L.marker(ll).addTo(map);
-
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+	      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      
+      polygon = L.polygon([
+          [-36.848857,174.755402],
+          [-36.857373,174.764328],
+          [-36.850780,174.772568]
+      ]).addTo(map);
+      
       tooltip = L.tooltip({
-          target: marker,
+          target: polygon,
 	      map: map,
 	      html: "I'm a tooltip!",
-          padding: '4px 8px'
+          padding: '4px 8px',
+          showDelay: 0
       });
+
     </script>
   </body>
 </html>
