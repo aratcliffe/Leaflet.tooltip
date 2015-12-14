@@ -1,0 +1,24 @@
+{
+  "name": "leaflet.tooltip",
+  "version": "1.0.0",
+  "description": "================",
+  "main": "./src/Tooltip.js",
+  "directories": {
+    "example": "examples"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetarenko/Leaflet.tooltip.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tetarenko/Leaflet.tooltip/issues"
+  },
+  "homepage": "https://github.com/tetarenko/Leaflet.tooltip#readme"
+}
